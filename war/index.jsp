@@ -5,47 +5,47 @@
 <title>Card Test</title>
 
 <link rel="stylesheet" type="text/css" href="./style.css">
-<%@ page 
-import="com.google.appengine.api.users.*" 
-pageEncoding="utf-8"
-contentType="text/html;charset=utf-8"
-%>
+<%@ page import="com.google.appengine.api.users.*" pageEncoding="utf-8"
+	contentType="text/html;charset=utf-8"%>
 <%
-UserService userService = UserServiceFactory.getUserService();
-User user = userService.getCurrentUser();
-String msg;
+	UserService userService = UserServiceFactory.getUserService();
+	User user = userService.getCurrentUser();
+	String msg;
 
-if( user == null ){
-  msg = "<a href='" + userService.createLoginURL("/") + "'>ログイン</a> しろ、カス!";
-  } else {
-  msg = "ようこそ! あなたは <b>" + user.getNickname() + "</b> という名前でログインしています。"
-    + " <a href='" + userService.createLogoutURL("/") + "'>サインアウト</a>";
-}
+	if (user == null) {
+		msg = "<a href='" + userService.createLoginURL("/")
+				+ "'>ログイン</a> しろ、カス!";
+	} else {
+		msg = "<b>" + user.getNickname() + "</b> " + " <a href='"
+				+ userService.createLogoutURL("/") + "'>LogOut</a>";
+	}
 
-// System.out.println( msg );
+	// System.out.println( msg );
 %>
 </head>
 <body>
 
-	<p class="round"><%= msg %></p>
+	<%
+		if(user == null) {
+	%>
+	
+	<p class="round"><%=msg%></p>
 
-<%
-	if( user != null ) {
-%>
+	<%
+		} else {
+	%>
 	<div class="post">
-		<form id="form" action="/dummy" method="post">
+		<form id="form" action="/scaas" method="post">
 			<p>
 				<input type="text" name="title" id="title" />
-				<textarea name="article" id="article">
-Please input details.
-			</textarea>
+				<textarea name="article" id="article">Please input details.</textarea>
 				<input type="submit" />
+				<%=msg%>
 			</p>
 		</form>
-		<p>
-			<a href="#">[X] Close</a>
-		</p>
 	</div>
+	
+	<div id="content"></div>
 
 	<script type="text/javascript"
 		src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -58,18 +58,34 @@ Please input details.
 				};
 
 				var onSuccess = function(data, textStatus, jqXHR) {
-					$('#content ul').remove();
-					var ul = $('<ul/>');
-					var guestbook, li;
-					$.each(data, function(_, scass) {
-						var li = $('<li/>').text(
-								scass['title'] + '(' + scass['article'] + ')');
-						li.appendTo(ul);
+					// flush content
+					$('#content div').remove();
+					
+					// create content
+					for(var i in data){
+						var div = $('<div class="card"/>');
+						var aDel = $('<a href="#">[X]</a>').attr('id', data[i].key);
+						var pDel = $('<p class="delbtn"/>').append(aDel);
+						var pTitle = $('<p/>').text(data[i].title);
+						var pArti = $('<p/>').text(data[i].article);
+						div.append(pDel);
+						div.append(pTitle);
+						div.append(pArti);
+						div.appendTo('#content');
+					}
+					
+					/*
+					$.each(data, function(_, scaas) {
+						var pTitle = $('<p/>').text(scaas['title']);
+						var pArti = $('<p/>').text(scaas['article']);
+						pTitle.appendTo(div);
+						pArti.appendTo(div);
 					});
-					ul.appendTo('#content');
+					*/
+					div.appendTo('#content');
 				};
 				$.ajax({
-					url : '/scass',
+					url : '/scaas',
 					type : 'get'
 				}).success(onSuccess).error(onError);
 			}
@@ -90,26 +106,38 @@ Please input details.
 					alert('error');
 				};
 				var onSuccess = function(data, textStatus, jqXHR) {
-					alert('success');
+					alert(data);
 					title.val('');
 					article.val('');
-
 				};
+				
+				var data = {status:'create', title: title, article: article};
+				
 				$.ajax({
-					url : '/scaas',
-					type : 'post',
-					title : title,
-					article : article
+					url: '/scaas',
+					type: 'post',
+					data: data
 				}).success(onSuccess).error(onError);
+
+				//refresh();
+
 				return false;
 			};
 			//formのサブミットハンドラに指定する
-			$('#form').submit(submit);
+			$('form').submit(submit);
+			
+			//textareaをクリックで全消し
+			$('#article').click(function(){
+				if($(this).val() == 'Please input details.'){
+					$(this).val('');
+				}
+			});
+
 		});
 	</script>
-	
+
 	<%
-	}
+		}
 	%>
 
 </body>

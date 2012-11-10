@@ -46,3 +46,10 @@ div.card{
 
 	float:left;
 }
+
+p.delbtn {
+	text-align: right;
+}
+p.title{
+	font-weight: bolder;
+}
