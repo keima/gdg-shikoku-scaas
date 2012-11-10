@@ -1,5 +1,6 @@
 package com.google.sites.gdgshikoku.scaas;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -10,13 +11,11 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+//import com.google.appengine.repackaged.org.codehaus.jackson.map.ObjectMapper;
 
 @SuppressWarnings("serial")
 public class SCaaSServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.setContentType("text/plain");
-		resp.getWriter().println("Hello, world");
-		
 		Query query = new Query("SCaaS");
 		query.addSort("createdAt", SortDirection.DESCENDING);
 		
@@ -26,6 +25,10 @@ public class SCaaSServlet extends HttpServlet {
 		for(Entity entity:list){
 			
 		}
+		
+	//	ObjectMapper mapper = new ObjectMapper();
+		
+		PrintWriter out = resp.getWriter();
 	}
 	
 	@Override

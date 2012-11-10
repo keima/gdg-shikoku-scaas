@@ -16,7 +16,7 @@ User user = userService.getCurrentUser();
 String msg;
 
 if( user == null ){
-  msg = "<a href='" + userService.createLoginURL("/auth/") + "'>ログイン</a> しろ、カス!";
+  msg = "<a href='" + userService.createLoginURL("/") + "'>ログイン</a> しろ、カス!";
   } else {
   msg = "ようこそ! あなたは <b>" + user.getNickname() + "</b> という名前でログインしています。"
     + " <a href='" + userService.createLogoutURL("/") + "'>サインアウト</a>";
