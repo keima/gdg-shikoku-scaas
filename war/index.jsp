@@ -119,6 +119,8 @@
 			$(this).val('');
 		}
 	});
+	
+	setInterval(refresh, 10 * 1000);
 </script>
 </head>
 <body>
