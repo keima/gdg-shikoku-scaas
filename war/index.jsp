@@ -38,26 +38,16 @@
 
 			// create content
 			for ( var i in data) {
-				var div = $('<div class="card"/>');
-				var aDel = $('<a href="#">[X]</a>').attr('id', data[i].key);
+				var div = $('<div class="card"/>').attr('id', 'c' + data[i].key);
+				var aDel = $('<a href="#">[X]</a>').attr('id', data[i].key).attr('onClick','deleteReq(' + data[i].key + ')');
 				var pDel = $('<p class="delbtn"/>').append(aDel);
-				var pTitle = $('<p/>').text(data[i].title);
+				var pTitle = $('<p class="title"/>').text(data[i].title);
 				var pArti = $('<p/>').text(data[i].article);
 				div.append(pDel);
 				div.append(pTitle);
 				div.append(pArti);
 				div.appendTo('#content');
 			}
-
-			/*
-			$.each(data, function(_, scaas) {
-				var pTitle = $('<p/>').text(scaas['title']);
-				var pArti = $('<p/>').text(scaas['article']);
-				pTitle.appendTo(div);
-				pArti.appendTo(div);
-			});
-			 */
-			//			div.appendTo('#content');
 		};
 		$.ajax({
 			url : '/scaas',
@@ -81,17 +71,11 @@
 			alert('error');
 		};
 		var onSuccess = function(data2, textStatus, jqXHR) {
-			alert(data2);
 			title.val('');
 			article.val('');
+			setTimeout(refresh, 1000);
 		};
-
-		//		var data1=JSON.parse(" {
-		//			title2 : title,
-		//			article2 : article,
-		//			status2 : 'create',
-		//		}")";
-		var data1 = 'status=create&title=' + title + '&article=' + article;
+		var data1 = 'status=create&title=' + title.val() + '&article=' + article.val();
 
 		console.log("JSON: " + data1);
 		$.ajax({
@@ -100,13 +84,34 @@
 			data : data1,
 		}).done(onSuccess).fail(onError);
 
-		//refresh();
+		return false;
+	};
+	
+	// delete
+	function deleteReq(key) {
+
+		var onError = function(jqXHR, textStatus, errorThrown) {
+			alert('error');
+		};
+		var onSuccess = function(data2, textStatus, jqXHR) {
+			$('#c'+ key).hide('2000', function(){
+				$('#c'+ key).remove();
+			});
+			
+			//setTimeout(refresh,3000);
+		};
+		
+		var data1 = 'status=delete&key=' + key;
+
+		console.log("JSON: " + data1);
+		$.ajax({
+			url : '/scaas',
+			type : 'post',
+			data : data1,
+		}).done(onSuccess).fail(onError);
 
 		return false;
 	};
-
-	//formのサブミットハンドラに指定する
-	//		$('form').submit(submit);
 
 	//		//textareaをクリックで全消し
 	$('#article').click(function() {
