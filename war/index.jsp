@@ -63,25 +63,17 @@
 					
 					// create content
 					for(var i in data){
-						var div = $('<div class="card"/>');
-						var aDel = $('<a href="#">[X]</a>').attr('id', data[i].key);
+						var div = $('<div class="card"/>').attr('id','c'+data[i].key);
+						var aDel = $('<a/>').attr('id', data[i].key).attr('href','#').text('[X]');
 						var pDel = $('<p class="delbtn"/>').append(aDel);
-						var pTitle = $('<p/>').text(data[i].title);
-						var pArti = $('<p/>').text(data[i].article);
+						var pTitle = $('<p class="title"/>').text(data[i].title);
+						var pArti = $('<p class="article"/>').text(data[i].article);
 						div.append(pDel);
 						div.append(pTitle);
 						div.append(pArti);
 						div.appendTo('#content');
 					}
 					
-					/*
-					$.each(data, function(_, scaas) {
-						var pTitle = $('<p/>').text(scaas['title']);
-						var pArti = $('<p/>').text(scaas['article']);
-						pTitle.appendTo(div);
-						pArti.appendTo(div);
-					});
-					*/
 					div.appendTo('#content');
 				};
 				$.ajax({
@@ -89,11 +81,12 @@
 					type : 'get'
 				}).success(onSuccess).error(onError);
 			}
+			
 			//起動直後に一度実行する
 			refresh();
 
 			// submit
-			var submit = function(event) {
+			var submit = function() {
 				var title = $('#title');
 				var article = $('#article');
 
@@ -106,9 +99,10 @@
 					alert('error');
 				};
 				var onSuccess = function(data, textStatus, jqXHR) {
-					alert(data);
+					alert('success');
 					title.val('');
 					article.val('');
+					setTimeout(refresh, 1000);
 				};
 				
 				var data = {status:'create', title: title, article: article};
@@ -117,14 +111,42 @@
 					url: '/scaas',
 					type: 'post',
 					data: data
-				}).success(onSuccess).error(onError);
-
-				//refresh();
-
+				}).complete(onSuccess).error(onError);
 				return false;
 			};
+			
+			//var deleteRequest = function(){
+			function deleteRequest(){
+				var key = $(this).attr(id);
+				
+				var data = { status:'delete', key: key };
+				
+				new $.ajax({
+					url: '/scaas',
+					type: 'post',
+					data: data,
+					error:function(){ alert('delete:error') },
+		            complete:function(data){
+		            	alert(data);
+		            	setTimeout(refresh(), 1000);
+		            	},
+		            dataType:'json'
+				});
+				
+				$('#c' + key).hide('slow');
+				$('#c' + key).remove();
+				
+				alert('boo!');
+				
+				return false;
+			};
+			
 			//formのサブミットハンドラに指定する
 			$('form').submit(submit);
+			$('input[type="submit"]').click(submit);
+			
+			//[x]にajax送信を付与
+			$('p.delbtn a').click(deleteRequest);
 			
 			//textareaをクリックで全消し
 			$('#article').click(function(){
