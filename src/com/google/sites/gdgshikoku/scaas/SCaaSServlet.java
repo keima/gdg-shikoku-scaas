@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,8 +37,8 @@ public class SCaaSServlet extends HttpServlet {
 		for (Entity entity : list) {
 
 			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-			// TODO: 
-			map.put("key", (String) entity.getProperty("Key") );
+			// TODO:
+			map.put("key", (String) entity.getProperty("Key"));
 			map.put("title", (String) entity.getProperty("title"));
 			map.put("article", (String) entity.getProperty("article"));
 			json.add(map);
@@ -60,7 +59,16 @@ public class SCaaSServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		PrintWriter out = resp.getWriter();
 		String status = req.getParameter("status");
+		System.out.println("STATUS: " + status);
+
+		Enumeration<String> elem = req.getParameterNames();
+		for (String name = elem.nextElement(); elem.hasMoreElements(); name = elem
+				.nextElement()) {
+			System.out.println("PARAM: " + name);
+			System.out.println("DATA : " + req.getParameter(name));
+		}
 
 		if ("create".equals(status)) {
 
@@ -77,7 +85,7 @@ public class SCaaSServlet extends HttpServlet {
 					.getDatastoreService();
 			datastoreService.put(entity);
 
-			resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+			resp.setStatus(HttpServletResponse.SC_OK);
 		}
 	}
 }
